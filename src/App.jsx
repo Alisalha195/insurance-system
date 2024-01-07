@@ -8,7 +8,7 @@ function App() {
 
   return (
     <>
-      INSURANCE App
+      INSURANCE New APP
     </>
   )
 }
