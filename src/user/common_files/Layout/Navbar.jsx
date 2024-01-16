@@ -81,6 +81,7 @@ const Navbar = ({auth , setAuth}) => {
             </Link>
 		)
 	}
+	
 	return (
     <Box sx={{ flexGrow: 1 }}>
       
