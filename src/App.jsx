@@ -3,11 +3,11 @@ import {Routes , Route} from 'react-router-dom'
 import HomePage from './user/common_files/pages/HomePage/HomePage'
 import Login from './user/common_files/pages/Auth/Login'
 import Signup from './user/common_files/pages/Auth/Signup'
-import {Dashboard as AdminDashboard} from './admin/pages/Dashboard/Dashboard'
+import AdminDashboard  from './admin/pages/Dashboard/AdminDashboard'
 import User from './user/common_files/User/User'
 
-import {Dashboard as BownerDashboard} from './user/buisness_owner/pages/Dashboard/Dashboard'
-import {Dashboard as EmpDashboard} from './user/employee/pages/Dashboard/Dashboard'
+import BownerDashboard  from './user/buisness_owner/pages/Dashboard/BownerDashboard'
+import EmpDashboard  from './user/employee/pages/Dashboard/EmpDashboard'
 
 
 import Company from './user/buisness_owner/Company/Company'
@@ -21,6 +21,8 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<HomePage /> }/>
+        <Route path="/home" element={<HomePage /> }/>
+
         <Route path="/admin" element={<AdminDashboard /> }/>
 
         <Route path="/login" element={<Login /> }/>

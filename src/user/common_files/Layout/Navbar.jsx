@@ -1,27 +1,12 @@
 import {useState} from 'react'
-// import { Container, Box } from '@mui/material';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import Avatar from '@mui/material/Avatar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
+
+import { Container, Box, AppBar ,Button ,Tooltip, Avatar, Toolbar , Typography ,IconButton ,Switch ,MenuItem ,Menu ,Link, FormControlLabel ,FormControl ,FormGroup } from '@mui/material';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
-import Link from '@mui/material/Link';
-
-import ElderlyIcon from '@mui/icons-material/Elderly';
-import FormControl from '@mui/material/FormControl';
-import FormGroup from '@mui/material/FormGroup';
 
 
+import Logo from '../../../assets/Logo'
 const Navbar = ({auth , setAuth}) => {
 
 	
@@ -52,35 +37,6 @@ const Navbar = ({auth , setAuth}) => {
 		setAuth(event.target.checked);
 	};
 
-	const LogoIcon = () => {
-		return (
-			<Link href="/home" color="#fff">
-				<IconButton
-		            size="large"
-		            edge="end"
-		            color="inherit"
-		            aria-label="menu"
-		            sx={{ mr: 1 }}
-			        >
-		            <ElderlyIcon />
-		            <Typography     variant="h6"
-						            noWrap
-						            sx={{
-						              mr: 2,
-						              display: { xs: 'none', md: 'flex' },
-						              fontFamily: 'monospace',
-						              fontWeight: 700,
-						              letterSpacing: '.3rem',
-						              color: 'inherit',
-						              textDecoration: 'none',
-						            }}
-	                >
-			            Insuraly
-					</Typography>
-	            </IconButton>
-            </Link>
-		)
-	}
 	
 	return (
     <Box sx={{ flexGrow: 1 }}>
@@ -126,7 +82,7 @@ const Navbar = ({auth , setAuth}) => {
               ))}
             </Menu>
           </Box>
-          <LogoIcon />
+          <Logo />
           <FormGroup>
 			<FormControlLabel
 				value="top"
