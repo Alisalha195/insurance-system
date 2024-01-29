@@ -11,21 +11,33 @@ import Navbar from '../../Layout/Navbar'
 const HomePage = () => {
 
 	const navigate = useNavigate()
-	const handleNavigateToSignin = () => {
-		alert("dgdfgdfgdf")
+
+	const handleNavigateToLogin = () => {
+		if(checkRememberUserLogedin()) {
+			console.log("Loged in already")
+			navigate("/home")
+		}
+		else
+			navigate("/login")
 	}
-	const [auth, setAuth] = useState(false)
+
+	const checkRememberUserLogedin = () => {
+	    const rememberUserLogedin = localStorage.getItem("rememberUserLogedin")
+	    return rememberUserLogedin
+	      
+	}
+	// const [auth, setAuth] = useState(false)
 	return (
 		<>
-			<Navbar auth={auth} setAuth={setAuth} />
+			<Navbar  />
 			<Container  maxWidth="1900px" > 
 				
-				{ auth &&
-				 
-					<Box sx={{border:"1px solid #666"}}>
-						
-					</Box>
-				}
+				{/* { auth && */}
+				{/*   */}
+				{/* 	<Box sx={{border:"1px solid #666"}}> */}
+				{/* 		 */}
+				{/* 	</Box> */}
+				{/* } */}
 
 				<Box mt={4} justifyContent="center"
 				     sx={{flexGrow: 1 ,
@@ -46,9 +58,9 @@ const HomePage = () => {
 					</Typography>
 					
 					<Button variant="outlined"
-							onClick = {()=> navigate("/signin")}
+							onClick = {()=>  handleNavigateToLogin()}
 					>
-						signin
+						Login
 					</Button>
 					
 						

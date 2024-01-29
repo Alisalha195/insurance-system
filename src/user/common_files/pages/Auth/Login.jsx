@@ -1,46 +1,58 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
+import React, {useState} from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+
+import { auth } from '../../../../firebase/firebase';
+import {  signInWithEmailAndPassword   } from 'firebase/auth';
+
+import {Avatar, Button, CssBaseline, TextField,  FormControlLabel , Checkbox, Link, Grid, Box, Typography, Container, } from '@mui/material/'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Insuraly
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
-// TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
-export default function SignIn() {
+const Login = ()=> {
+
+  const navigate = useNavigate();
+
+ 
+  
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [rememberMe, setRememberMe] = useState(false);
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          localStorage.setItem("userID", user.uid)
+          // console.log(user.uid);
+          navigate(`/B-owner/${user.uid}/dashboard`)
+          // console.log(user);
+      })
+      .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          alert(errorMessage)
+          console.log(errorCode, errorMessage)
+      });
   };
 
+  const handleRememberMeClick = (event) => {
+    setRememberMe(event.target.checked)
+    localStorage.setItem("rememberUserLogedin", rememberMe)
+  }
+
+  
+
   return (
+
+
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -68,6 +80,7 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              onChange={(e)=>setEmail(e.target.value)}
             />
             <TextField
               margin="normal"
@@ -78,9 +91,15 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={(e)=>setPassword(e.target.value)}
             />
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={
+                <Checkbox value={rememberMe} 
+                          color="primary" 
+                          onChange={ (e) => handleRememberMeClick(e) }
+                />
+              }
               label="Remember me"
             />
             <Button
@@ -89,7 +108,7 @@ export default function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Log In
             </Button>
             <Grid container>
               <Grid item xs>
@@ -105,8 +124,9 @@ export default function SignIn() {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
+       
       </Container>
     </ThemeProvider>
   );
 }
+export default  Login

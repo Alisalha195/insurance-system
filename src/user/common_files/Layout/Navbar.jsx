@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import {useNavigate} from 'react-router-dom' 
 
 import { Container, Box, AppBar ,Button ,Tooltip, Avatar, Toolbar , Typography ,IconButton ,Switch ,MenuItem ,Menu ,Link, FormControlLabel ,FormControl ,FormGroup } from '@mui/material';
 
@@ -7,9 +8,12 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 
 
 import Logo from '../../../assets/Logo'
-const Navbar = ({auth , setAuth}) => {
+const Navbar = () => {
 
-	
+  const [auth, setAuth] = useState(false)
+
+	const navigate = useNavigate()
+
 	const [anchorElNav, setAnchorElNav] = useState(null);
 	const [anchorElUser, setAnchorElUser] = useState(null);
 
@@ -37,6 +41,16 @@ const Navbar = ({auth , setAuth}) => {
 		setAuth(event.target.checked);
 	};
 
+  const handleLogout = () => {
+    localStorage.setItem("rememberUserLogedin", false)
+    localStorage.setItem("userID", "")
+    console.log("user is : ",localStorage.getItem("userID"))
+    navigate("/login")
+  }
+  const handleDashboardNavigate = () => {
+    
+    navigate("/B-owner/dashboard")
+  }
 	
 	return (
     <Box sx={{ flexGrow: 1 }}>
@@ -136,7 +150,17 @@ const Navbar = ({auth , setAuth}) => {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                
+                <MenuItem key={setting} 
+                          onClick={
+                            setting == "Logout" 
+                            ? (() => {handleLogout()})
+                            : setting == "Dashboard" 
+                              ? (() => {handleDashboardNavigate()})
+                              : null
+
+                          }
+                >
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}

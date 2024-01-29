@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import {auth} from "../../../../firebase/firebase"
+
 import {AppBar ,Button ,Card ,CardActions , CardContent, CardMedia , CssBaseline ,Grid , Stack, Box, Toolbar, Typography, Container, Link } from '@mui/material';
 
 
@@ -15,15 +17,18 @@ import CompaniesList from '../../Company/CompaniesList'
 const defaultTheme = createTheme();
 
 const BownerDashboard = ()=> {
+  const userID = localStorage.getItem("userID");
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <CssBaseline />
       <Navbar />
 
       <main>
-        {/* Hero unit */}
+        {
+          userID && <CompaniesList  userID={userID}/>
+        }
         
-        <CompaniesList />
       </main>
 
     </ThemeProvider>

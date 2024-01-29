@@ -29,6 +29,7 @@ function App() {
         <Route path="/signup" element={<Signup /> }/>
       	
         <Route path="/B-owner/dashboard" element={<BownerDashboard /> }/>
+        <Route path="/B-owner/:id/dashboard" element={<BownerDashboard /> }/>
         <Route path="/emp/dashboard" element={<EmpDashboard /> }/>
 
       	<Route path="/user/:id" element={<User /> }/>
