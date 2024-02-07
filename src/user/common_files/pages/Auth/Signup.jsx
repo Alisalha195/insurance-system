@@ -14,10 +14,15 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const defaultTheme = createTheme();
 
+// collections Refs
+const bOwnersCollectionRef = collection(db, "buisnessOwners")
+const employeesCollectionRef = collection(db, "Employees")
+
 const SignUp = ()=>  {
 
   const navigate = useNavigate();  
 
+  const [nationalID, setNationalID] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -26,36 +31,56 @@ const SignUp = ()=>  {
   const [userType, setUserType] = useState(1);  
 
   const userTypes = {BOwner : 1 , Employee: 2}
-  const usersCollectionRef = collection(db, "users")
+  
 
   const handleUserTypeChange = (event) => {
     setUserType(event.target.value)
   }
   const saveUserInfo = async (user) => {
 
-    const newUser = doc(usersCollectionRef)
-    await setDoc(newUser, {
+    userType == 1 ?  saveBOwnerInfo(user) :  saveEmployeeInfo(user)
+
+  }
+
+  const saveBOwnerInfo = async (user) => {
+
+    const newbOwner = doc(bOwnersCollectionRef)
+    await setDoc(newbOwner, {
+
+      uID : user.uid ,
+      nationalID: nationalID ,
+      firstName : firstName ,
+      lastName : lastName ,
+      email : email ,
+      password: password ,
+      
+      // rememberMe : rememberMe ,
+    })
+  } 
+  const saveEmployeeInfo = async (user) => {
+    
+    const newEmployee = doc(employeesCollectionRef)
+    await setDoc(newEmployee, {
+
       uID : user.uid ,
       firstName : firstName ,
       lastName : lastName ,
       email : email ,
-      rememberMe : rememberMe ,
-      userType : userType
+      
     })
-
-  }
+  } 
   const handleSubmit = async (event) => {
      event.preventDefault();
 
      await createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-            // Signed in
+            
             const user = userCredential.user;
-            console.log(user.uid);
+            
             saveUserInfo(user)
 
             navigate("/login")
-            // ...
+            
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -65,9 +90,10 @@ const SignUp = ()=>  {
         });
   };
 
-  const handleRememberMeClick = (event) => {
+  const rememberUser = (event) => {
     setRememberMe(event.target.checked)
-    console.log("rememberMe = " , rememberMe )
+    localStorage.setItem("rememberMe" , rememberMe)
+    
   }
 
   
@@ -92,90 +118,104 @@ const SignUp = ()=>  {
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
-                  name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                  value={firstName}
-                  onChange={(e) => {setFirstName(e.target.value)}}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
-                  value={lastName}
-                  onChange={(e) => {setLastName(e.target.value)}}
-                />
-              </Grid>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                  <FormControl fullWidth>
-              <InputLabel id="userType">your role</InputLabel>
-              <Select
-                labelId="userType"
-                id="simple-select"
-                value={userType}
-                label="User Type"
-                onChange={handleUserTypeChange} 
-                style={{color: "#555"}}
-                
-              >
-                <MenuItem style={{color: "#666"}} 
-                          value={userTypes.BOwner}>Buisness Owner
-                </MenuItem>
-                <MenuItem style={{color: "#666"}}  
-                          value={userTypes.Employee}>Employee
-                </MenuItem>
-              </Select>
-            </FormControl>
-              </Grid>
+                  <TextField
+                    autoComplete="given-name"
+                    name="nationalID"
+                    required
+                    fullWidth
+                    id="nationalID"
+                    label="National ID"
+                    type="number"
+                    autoFocus
+                    value={nationalID}
+                    onChange={(e) => {setNationalID(e.target.value)}}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    autoComplete="given-name"
+                    name="firstName"
+                    required
+                    fullWidth
+                    id="firstName"
+                    label="First Name"
+                    autoFocus
+                    value={firstName}
+                    onChange={(e) => {setFirstName(e.target.value)}}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="lastName"
+                    label="Last Name"
+                    name="lastName"
+                    autoComplete="family-name"
+                    value={lastName}
+                    onChange={(e) => {setLastName(e.target.value)}}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="new-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                    <FormControl fullWidth>
+                <InputLabel id="userType">your role</InputLabel>
+                <Select
+                  labelId="userType"
+                  id="simple-select"
+                  value={userType}
+                  label="User Type"
+                  onChange={handleUserTypeChange} 
+                  style={{color: "#555"}}
+                  
+                >
+                  <MenuItem style={{color: "#666"}} 
+                            value={userTypes.BOwner}>Buisness Owner
+                  </MenuItem>
+                  <MenuItem style={{color: "#666"}}  
+                            value={userTypes.Employee}>Employee
+                  </MenuItem>
+                </Select>
+              </FormControl>
+                </Grid>
 
-              {/* <Grid item xs={12}> */}
-              {/*   <FormControlLabel */}
-              {/*     control={<Checkbox value="allowExtraEmails" color="primary" />} */}
-              {/*     label="I want to receive inspiration, marketing promotions and updates via email." */}
-              {/*   /> */}
-              {/* </Grid> */}
+                {/* <Grid item xs={12}> */}
+                {/*   <FormControlLabel */}
+                {/*     control={<Checkbox value="allowExtraEmails" color="primary" />} */}
+                {/*     label="I want to receive inspiration, marketing promotions and updates via email." */}
+                {/*   /> */}
+                {/* </Grid> */}
             </Grid>
             <FormControlLabel
               control={
                 <Checkbox value={rememberMe} 
                           color="primary" 
-                          onChange={ (e) => handleRememberMeClick(e) }
+                          onChange={ (e) => rememberUser(e) }
                 />
               }
               label="Remember me"

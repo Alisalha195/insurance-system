@@ -1,5 +1,8 @@
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom' 
+import {  signOut  } from 'firebase/auth';
+import { auth } from '../../../firebase/firebase';
+
 
 import { Container, Box, AppBar ,Button ,Tooltip, Avatar, Toolbar , Typography ,IconButton ,Switch ,MenuItem ,Menu ,Link, FormControlLabel ,FormControl ,FormGroup } from '@mui/material';
 
@@ -10,17 +13,49 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import Logo from '../../../assets/Logo'
 const Navbar = () => {
 
-  const [auth, setAuth] = useState(false)
+  
+  const userID =  auth.currentUser?.uid 
 
 	const navigate = useNavigate()
 
 	const [anchorElNav, setAnchorElNav] = useState(null);
 	const [anchorElUser, setAnchorElUser] = useState(null);
 
-	const pages = ['Products', 'Pricing', 'Blog'];
-	const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-
 	
+  const pages = [
+    { title : "companies" ,
+      method : () => { 
+        handleCloseNavMenu()
+        navigate("/companies")
+      }
+    }  ,
+    { title : "policy" ,
+      method : () => { 
+        handleCloseNavMenu()
+        navigate("/policy")
+      }
+    }  ,
+    { title : "blog" ,
+      method : () => { 
+        handleCloseNavMenu()
+        navigate("/blog")
+      }
+    }
+  ]
+	const settings = [
+    { title : "Profile" ,
+      method : () => handleProfileClick()
+    }  ,
+    { title : "Account" ,
+      method : () => handleAccountClick()
+    }  ,
+    { title : "Dashboard" ,
+      method : () => handleDashboardNavigate()
+    }  ,
+    { title : "Logout" ,
+      method : () => handleLogout()
+    }  
+  ]
 
 	const handleOpenNavMenu = (event) => {
 		setAnchorElNav(event.currentTarget);
@@ -31,28 +66,48 @@ const Navbar = () => {
 
 	const handleCloseNavMenu = () => {
 		setAnchorElNav(null);
+    
 	};
 
 	const handleCloseUserMenu = () => {
 		setAnchorElUser(null);
 	};
 
-	const handleToggleAuth = (event) => {
-		setAuth(event.target.checked);
-	};
+  const handleProfileClick = () => {
+    handleCloseUserMenu()
+    navigate(`/profile/${userID}`)
+    
+  }
+	
+  const handleAccountClick = () => {
+    handleCloseUserMenu()
+    navigate(`/account/${userID}`)
+    
+  }
 
-  const handleLogout = () => {
+
+  const handleLogout = async () => {
+    handleCloseUserMenu()
     localStorage.setItem("rememberUserLogedin", false)
     localStorage.setItem("userID", "")
     console.log("user is : ",localStorage.getItem("userID"))
+    await signOut(auth)
+    .then(()=>{
+      console.log('signed out !')
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+
     navigate("/login")
   }
   const handleDashboardNavigate = () => {
+    handleCloseUserMenu()
     
-    navigate("/B-owner/dashboard")
+    navigate(`/B-owner/${userID}/dashboard`)
   }
 	
-	return (
+	return ( 
     <Box sx={{ flexGrow: 1 }}>
       
       <AppBar position="static" sx={{background:"#004d7a"}} mt={0}>
@@ -90,22 +145,15 @@ const Navbar = () => {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page.title}   onClick={page.method} >
+                  <Typography textAlign="center"  >{page.title}</Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
           <Logo />
           <FormGroup>
-			<FormControlLabel
-				value="top"
-				control={<Switch color="warning" 
-			          			checked={auth}
-								onChange={handleToggleAuth} />}
-				label="Auth"
-				labelPlacement="top"
-			/>
+			
 		  </FormGroup>
           <Box 
 	          justifyContent="right" 
@@ -117,18 +165,18 @@ const Navbar = () => {
           >
             {pages.map((page) => (
               <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                key={page.title}
+                onClick={page.method}
+                sx={{ my: 2, color: 'white', display: 'block' , mr:4 }}
               >
-                {page}
+                {page.title}
               </Button>
             ))}
           </Box>
 
           { auth &&
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
+            <Tooltip title="settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
@@ -151,17 +199,11 @@ const Navbar = () => {
             >
               {settings.map((setting) => (
                 
-                <MenuItem key={setting} 
-                          onClick={
-                            setting == "Logout" 
-                            ? (() => {handleLogout()})
-                            : setting == "Dashboard" 
-                              ? (() => {handleDashboardNavigate()})
-                              : null
+                <MenuItem key={setting.title} 
+                          onClick = { setting.method}
 
-                          }
                 >
-                  <Typography textAlign="center">{setting}</Typography>
+                  <Typography textAlign="center">{setting.title}</Typography>
                 </MenuItem>
               ))}
             </Menu>

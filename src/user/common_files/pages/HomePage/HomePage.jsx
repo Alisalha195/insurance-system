@@ -8,22 +8,24 @@ import { Container, Box  ,Typography, Link, Button} from '@mui/material';
 
 import Navbar from '../../Layout/Navbar'
 
-const HomePage = () => {
+const HomePage = ({user}) => {
 
 	const navigate = useNavigate()
 
 	const handleNavigateToLogin = () => {
-		if(checkRememberUserLogedin()) {
-			console.log("Loged in already")
-			navigate("/home")
-		}
-		else
-			navigate("/login")
+		console.log(user)
+		// if(checkRememberUserLogedin()) {
+		// 	console.log("Loged in already")
+		// 	navigate("/home")
+		// }
+		// else
+		// 	navigate("/login")
 	}
 
 	const checkRememberUserLogedin = () => {
-	    const rememberUserLogedin = localStorage.getItem("rememberUserLogedin")
-	    return rememberUserLogedin
+	    // const rememberUserLogedin = localStorage.getItem("rememberUserLogedin")
+	    // return rememberUserLogedin
+	    return true;
 	      
 	}
 	// const [auth, setAuth] = useState(false)
@@ -32,13 +34,6 @@ const HomePage = () => {
 			<Navbar  />
 			<Container  maxWidth="1900px" > 
 				
-				{/* { auth && */}
-				{/*   */}
-				{/* 	<Box sx={{border:"1px solid #666"}}> */}
-				{/* 		 */}
-				{/* 	</Box> */}
-				{/* } */}
-
 				<Box mt={4} justifyContent="center"
 				     sx={{flexGrow: 1 ,
 				          border:"2px solid #ccc",
@@ -70,6 +65,8 @@ const HomePage = () => {
 		</>
 		
 	)
+
+
 }
 export default HomePage
 

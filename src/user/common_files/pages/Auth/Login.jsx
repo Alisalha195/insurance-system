@@ -11,29 +11,29 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const defaultTheme = createTheme();
 
-const Login = ()=> {
+const Login = ({user})=> {
 
   const navigate = useNavigate();
-
- 
-  
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(localStorage.getItem("rememberMe")||false);
+
+  const [authUser, setAuthUser] = useState("")
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-          // Signed in
+          
           const user = userCredential.user;
+          setAuthUser(user.uid)
           localStorage.setItem("userID", user.uid)
-          // console.log(user.uid);
+          
           navigate(`/B-owner/${user.uid}/dashboard`)
-          // console.log(user);
+          
       })
       .catch((error) => {
           const errorCode = error.code;
@@ -51,8 +51,7 @@ const Login = ()=> {
   
 
   return (
-
-
+    
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -127,6 +126,8 @@ const Login = ()=> {
        
       </Container>
     </ThemeProvider>
+
+    
   );
 }
 export default  Login
