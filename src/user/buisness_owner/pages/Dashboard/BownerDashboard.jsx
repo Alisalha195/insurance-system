@@ -1,5 +1,5 @@
-import {useState, useEffect} from 'react';
-import {getDoc, doc, collection, count, getCountFromServer } from "firebase/firestore"
+import {useState, useEffect, Suspense,lazy} from 'react';
+import {getDoc,getDocs, doc, query ,where,collection, count, getCountFromServer } from "firebase/firestore"
 import {auth, db} from "../../../../firebase/firebase";
 
 import {AppBar ,Button ,Card ,CardActions , CardContent, CardMedia , CssBaseline ,Grid , Stack, Drawer,Alert ,Collapse ,Fade ,Box, Toolbar, Typography, Container, Link, Tabs , Tab ,IconButton } from '@mui/material';
@@ -14,25 +14,111 @@ import Logo from '../../../../assets/Logo'
 import Navbar from '../../../common_files/Layout/Navbar' 
 import CompaniesList from '../../Company/CompaniesList'
 import NotAuth from "../../../common_files/pages/Auth/NotAuth"
-import AddCompany from '../../Company/AddCompany'
-import AddEmployee from '../../Company/AddEmployee'
+
+import {getAllCompanies,getCompanyByName,getCompanyDocByOwnerID,getAllCompaniesCount} from "../../../../assets/CompaniesHelpers";
+
+// import AddCompany from '../../Company/AddCompany'
+// import AddEmployee from '../../Company/AddEmployee'
+const AddCompany =  lazy(()=> import('../../Company/AddCompany')) 
+const AddEmployee =  lazy(()=> import('../../Company/AddEmployee')) 
 
 
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
+
+
 const companiesRef = collection(db , "companies")
 const employeesRef = collection(db , "Employees")
 
 
 
-const BownerDashboard = ()=> {
+const BownerDashboard = ({isLoading,setIsLoading,authUser})=> {
   
-   const userID = auth.currentUser?.uid 
-   const[companiesCount, setCompaniesCount] = useState(" ")
-   const[employeesCount, setEmployeesCount] = useState(" ")
-   const[viewCompanyForm, setViewCompanyForm] = useState(false)
-   const[viewEmployeeForm, setViewEmployeeForm] = useState(false)
-   const [addedSuccessAlert , setAddedSuccessAlert] = useState(false)
+  const userID = authUser 
+  const[companiesCount, setCompaniesCount] = useState(" ")
+  const[employeesCount, setEmployeesCount] = useState(" ")
+  const[viewCompanyForm, setViewCompanyForm] = useState(false)
+  const[viewEmployeeForm, setViewEmployeeForm] = useState(false)
+  const[addedSuccessAlert , setAddedSuccessAlert] = useState(false)
+
+  const [companiesList , setCompaniesList] = useState([])
+  const [selectedCompany, setSelectedCompany] = useState("not selected")
+
+
+  const getCompaniesFromDB = async() => {
+   
+    try {
+
+    // const results = await getDocs(companiesRef)
+
+      const q = query(companiesRef , where("uID","==",userID) )
+
+      const results = await getDocs(q)
+
+      // console.log(results)
+      const fiteredResults = []
+      results.forEach((doc) => {
+      
+        const Company = {
+          companyID : doc.id ,
+          companyName :  doc.data().name
+        }
+
+        fiteredResults.push(Company)
+      }) 
+
+      setCompaniesList(fiteredResults)
+      
+    } catch(err) {
+       console.error(err);
+    }
+
+    // const results = await getDocs(companiesRef)
+     
+  }
+
+  useEffect(() => {
+
+    // console.log("Testing :",getAllCompanies())
+    // const s = getAllCompaniesCount()
+    // console.log(s)
+    if(!isLoading)
+      getCompaniesFromDB()
+
+    
+  },[isLoading])
+
+//   useEffect(()=>{
+//     const getCompaniesFromDB = async () => {
+//       try {
+//         const q = query(companiesCollectionRef , where("userID","==",userID) )
+//         const data = await getDocs(q)
+//         data.forEach((doc)=> {
+//           // console.log(doc.id, doc.data().title)
+//         })
+//         // const filteredData = data.docs.map((doc)=>({...doc.data() , id: doc.id }))
+// 
+//       } catch(err) {
+//         
+//         console.error(err);
+//       }
+//       
+//     }
+//     getCompaniesFromDB()
+//   }, [])
+
+  useEffect(()=>{
+    if(companiesList.length > 0 )
+      setSelectedCompany(companiesList[0].companyName)
+  },[companiesList])
+
+  useEffect(()=>{
+    setTimeout(()=>{
+      setIsLoading(false)
+      
+    },2000)
+    
+    
+  },[])
 
   const toggleViewCompanyForm = (state)  => {
     // if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -51,6 +137,7 @@ const BownerDashboard = ()=> {
   const getCompaniesCount = async () => {
       const snapshot = await getCountFromServer(companiesRef);
 
+      // setCompaniesCount (getAllCompaniesCount());
       setCompaniesCount (snapshot.data().count);
   }
 
@@ -69,13 +156,20 @@ const BownerDashboard = ()=> {
     getEmployeesCount()
   }, [])
 
+  if(isLoading) 
+    return (
+      <Box>
+        <Typography variant="h2">Now Loading ...</Typography>
+      </Box>
+    )
   return ( userID ? 
+    <Suspense >
     <ThemeProvider theme={defaultTheme}>
       <CssBaseline />
       <Navbar />
       <main>
         
-           {/* <CompaniesList  userID={userID}/> */}
+           
         <Box mt={5}>  
          <Stack direction="row" spacing={5} justifyContent="center">
 
@@ -115,18 +209,28 @@ const BownerDashboard = ()=> {
                      onClick={()=>toggleViewEmployeeForm(true)}>
                 <AddIcon />
                </Fab>
-             </Box>
+             </Box>  
+
+
            </Box>
+
+           {/* <Suspense fallback={<p>Loading....</p>}> */}
            <AddEmployee viewEmployeeForm={viewEmployeeForm}
                         toggleViewEmployeeForm = {toggleViewEmployeeForm}
                         setAddedSuccessAlert={setAddedSuccessAlert}
                         getEmployeesCount={getEmployeesCount}
+                        companiesList={companiesList}
+                        selectedCompany={selectedCompany}
+                        setSelectedCompany={setSelectedCompany}
+                        userID={userID}
                            />
+
+           {/* </Suspense> */}
          </Stack>
          </Box>
 
-         
-      </main>  
+      </main>
+
       {addedSuccessAlert && 
         
           <Box width="20%" ml={5} sx={{position:"absolute" , bottom:"50px"}}>
@@ -135,7 +239,12 @@ const BownerDashboard = ()=> {
         
       }
     </ThemeProvider>
-    : <NotAuth />
+    </Suspense>
+
+    : 
+      <Suspense fallback={<h3>Loading...</h3>}>
+        <NotAuth />
+      </Suspense>
 
   );
 }

@@ -1,22 +1,57 @@
 import {useState, useEffect} from 'react';
 
 import {auth, db} from "../../../firebase/firebase";
-import {getDoc,setDoc , doc, collection, count, getCountFromServer } from "firebase/firestore"
+import {getDoc,setDoc,getDocs , doc, collection, count, getCountFromServer } from "firebase/firestore"
 
-import {AppBar ,Button ,Card ,CardActions , CardContent, CardMedia , CssBaseline ,Grid , Stack, Drawer,Alert  ,Box, Toolbar, Typography, Container, Dialog, DialogActions ,DialogContent,DialogContentText, Link, Tabs,DialogTitle , Tab ,TextField } from '@mui/material';
+import {AppBar ,Button ,Card ,CardActions , CardContent, CardMedia , CssBaseline ,Grid , Stack, Drawer,Alert  ,Box, Toolbar, Typography, Container, Dialog, DialogActions ,DialogContent,DialogContentText, Link, Tabs,DialogTitle , Tab ,TextField,FormControl,InputLabel,Select,MenuItem } from '@mui/material';
+
+import CompaniesHelpers from "../../../assets/CompaniesHelpers";
+import {getAllCompanies,beginReadingCompanyDocByName,getCompanyByName,getCompanyByOwnerID} from "../../../assets/CompaniesHelpers";
+
+import {wait} from "../../../assets/timeMethods"
+const employeesRef = collection(db,"Employees")  
 
 
-const employeesRef = collection(db,"Employees")
-const AddEmployee = ({viewEmployeeForm , toggleViewEmployeeForm, setAddedSuccessAlert , getEmployeesCount}) => {
+const sevices = [
+	{
+		companyID : "id1" ,
+		salary: "3000" ,
+		startDate: "15/12/2020" ,
+		endDate: "15/12/2020" ,
+		isPaid:false,
+		isFinished:false ,
+		
+	} , 
+	{
 
-	// const [employeeName , setEmployeeName] = useState("")
-	// const [EmployeeField , setEmployeeField] = useState("")
+	}
+]
+
+const AddEmployee = ({viewEmployeeForm , toggleViewEmployeeForm, setAddedSuccessAlert , getEmployeesCount ,companiesList,selectedCompany,setSelectedCompany,userID}) => {
+
+	
 	const [firstName , setFirstName] = useState("")
 	const [lastName , setLastName] = useState("")
 	const [email , setEmail] = useState("")
 	const [password , setPassword] = useState("")
-	const [services , setEmployeeName] = useState([])
+	// const [services , setEmployeeName] = useState([])
 	
+
+	
+	const handleCompanySelection = (event) => {
+		// console.log("Testing : ",getAllCompanies())
+
+		// beginReadingCompanyDocByName(userID,"Dorea")
+		// let c = "waiting"
+		// 
+		// setTimeout(()=> {
+		//     c = getCompanyByName()
+		// 	console.log("company is : "  ,c )
+		// },3000)
+
+		
+		setSelectedCompany(event.target.value)
+	}
 	const handleClickOpen = () => {
 		toggleViewEmployeeForm(true);
 	};
@@ -45,17 +80,12 @@ const AddEmployee = ({viewEmployeeForm , toggleViewEmployeeForm, setAddedSuccess
 		      // uID : getUserID() ,
 		      firstName : firstName ,
 		      lastName : lastName ,
+		      company : selectedCompany
 		      
 		    })
 		    getEmployeesCount()
-		    // const formData = new FormData(event.currentTarget);
-		    // const formJson = Object.fromEntries(formData.entries());
-		    // const email = formJson.email;
-		     // const firstName = formJson.firstName;
-		     // const lastName = formJson.lastName;
-		     // const nationalID = formJson.nationalID;
 		     
-		    console.log(firstName);
+		    // console.log(firstName);
 		    handleClose();
 		} else {
 			console.log('some inputs are not valid')
@@ -85,6 +115,39 @@ const AddEmployee = ({viewEmployeeForm , toggleViewEmployeeForm, setAddedSuccess
 			  <DialogContentText>
 			    choose a company before adding new employee 
 			  </DialogContentText>
+			  <Box ml={2}>
+			  		<FormControl fontSize="large" sx={{width:"20%", fontSize:"10px"}}>
+                    <InputLabel id="Company">Company</InputLabel>
+                    <Select
+                      labelId="Company"
+                      id="simple-select"
+                      value={selectedCompany}
+                      label="Company"
+                      onChange={handleCompanySelection}
+                      style={{color: "#555"}}
+                    >
+                    
+                    {
+
+                    	companiesList && companiesList.map((item,index) => { 
+
+                    		return <MenuItem key={index} 
+				                    		 value={item.companyName}
+		                    		>
+		                    		  {item.companyName}
+		                    	   </MenuItem>
+                    		 
+                    	})
+                    	
+                    }
+                    
+                    </Select> 
+
+                    
+                  </FormControl>
+
+			  	</Box>
+			  	
 				<Container component="main" maxWidth="xl" >
 				<CssBaseline />
 

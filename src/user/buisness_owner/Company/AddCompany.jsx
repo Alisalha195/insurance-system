@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 
 import {auth, db} from "../../../firebase/firebase";
-import {getDoc,setDoc , doc, collection, count, getCountFromServer } from "firebase/firestore"
+import {getDoc,getDocs,setDoc , doc, collection, count, getCountFromServer } from "firebase/firestore"
 
 import AddSections from "./AddSections"
 
@@ -24,10 +24,13 @@ const AddCompany = ({ viewCompanyForm , toggleViewCompanyForm, setAddedSuccessAl
 	const [viewSectionForm , setViewSectionForm] = useState(false)
 	const [companySections , setCompanySections] = useState([])
 	
+	
 	const getUserID = () => {
 		const userID = auth.currentUser?.uid;
 		return userID;
 	}
+
+	
 
 	const InputFieldsValid = () => {
 		return !(companyName == "" || companyField=="" || companyAddress =="")

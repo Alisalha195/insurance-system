@@ -1,5 +1,5 @@
 import './App.css'
-import {useState, useEffect} from 'react';
+import {useState, useEffect, Suspense,lazy} from 'react';
 import {Navigate, Routes , Route} from 'react-router-dom'
 // import { auth} from './firebase/firebase';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -10,7 +10,9 @@ import Signup from './user/common_files/pages/Auth/Signup'
 import AdminDashboard  from './admin/pages/Dashboard/AdminDashboard'
 import User from './user/common_files/User/User'
 
-import BownerDashboard  from './user/buisness_owner/pages/Dashboard/BownerDashboard'
+const BownerDashboard =  lazy(()=> import('./user/buisness_owner/pages/Dashboard/BownerDashboard')) 
+
+// import BownerDashboard  from './user/buisness_owner/pages/Dashboard/BownerDashboard'
 import EmpDashboard  from './user/employee/pages/Dashboard/EmpDashboard'
 
 import Company from './user/buisness_owner/Company/Company'
@@ -22,9 +24,15 @@ function App() {
 
   const auth = getAuth();
   const[authUser, setAuthUser] = useState("")
+  const[isLoading, setIsLoading] = useState(true)
 
-  useEffect(()=>{
+  
+
+  const checkAuthUser =  async ()=> {
+    
+
     onAuthStateChanged(auth, (user) => {
+      // console.log('not waiting')
       if (user) {
         
         const uid = user.uid;
@@ -38,11 +46,18 @@ function App() {
         console.log("user is signed out")
       }
     })
+     
+  }
+
+  useEffect(()=>{
+    checkAuthUser()
 
   }, [authUser])
 
   return (
     <>
+    <Suspense >
+    
       <Routes>  
 
         <Route path="/" element={authUser ? <HomePage /> : <Navigate to='/login' /> }/>
@@ -52,7 +67,14 @@ function App() {
         <Route path="/login" element={authUser ?<Navigate to='/' /> :<Login /> }/>
         <Route path="/signup" element={<Signup /> }/>
       	
-        <Route path="/B-owner/:id/dashboard" element={<BownerDashboard /> }/>
+        <Route path="/B-owner/:id/dashboard" element={
+          <Suspense >
+            <BownerDashboard  isLoading={isLoading}  
+                              setIsLoading={setIsLoading}
+                              authUser={authUser}
+            /> 
+          </Suspense>
+        }/>
         <Route path="/emp/dashboard" element={<EmpDashboard /> }/>
 
       	<Route path="/user/:id" element={<User /> }/>
@@ -60,6 +82,7 @@ function App() {
       	<Route path="/add-company" element={<AddCompany /> }/>
         <Route path="/remove-company" element={<RemoveCompany /> }/>
       </Routes>
+      </Suspense>
     </>
   )
 }

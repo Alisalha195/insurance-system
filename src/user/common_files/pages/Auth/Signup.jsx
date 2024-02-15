@@ -183,25 +183,25 @@ const SignUp = ()=>  {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                    <FormControl fullWidth>
-                <InputLabel id="userType">your role</InputLabel>
-                <Select
-                  labelId="userType"
-                  id="simple-select"
-                  value={userType}
-                  label="User Type"
-                  onChange={handleUserTypeChange} 
-                  style={{color: "#555"}}
-                  
-                >
-                  <MenuItem style={{color: "#666"}} 
-                            value={userTypes.BOwner}>Buisness Owner
-                  </MenuItem>
-                  <MenuItem style={{color: "#666"}}  
-                            value={userTypes.Employee}>Employee
-                  </MenuItem>
-                </Select>
-              </FormControl>
+                  <FormControl fullWidth>
+                    <InputLabel id="userType">your role</InputLabel>
+                    <Select
+                      labelId="userType"
+                      id="simple-select"
+                      value={userType}
+                      label="User Type"
+                      onChange={handleUserTypeChange} 
+                      style={{color: "#555"}}
+                      
+                    >
+                      <MenuItem style={{color: "#666"}} 
+                                value={userTypes.BOwner}>Buisness Owner
+                      </MenuItem>
+                      <MenuItem style={{color: "#666"}}  
+                                value={userTypes.Employee}>Employee
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
                 </Grid>
 
                 {/* <Grid item xs={12}> */}

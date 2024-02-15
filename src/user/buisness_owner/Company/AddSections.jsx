@@ -8,11 +8,7 @@ import CloseSharpIcon from '@mui/icons-material/CloseSharp';
 
 const AddSections = ({viewSectionForm,toggleViewSectionForm,sections,setSections}) => {
 
-
-	// const[sections , setSections] = useState([])
-	// const[sectionsAreEmpty , setSectionsAreEmpty] = useState(true)
 	const[sectionName , setSectionName] = useState("")
-
 
 	const sectionNameisValid = () => {
 		return (sectionName != "")
@@ -38,12 +34,18 @@ const AddSections = ({viewSectionForm,toggleViewSectionForm,sections,setSections
 	}
 
 	const removeSectionFromList = (id) => {
-		console.log('removed!')
 		setSections(
 			sections.filter((section) => (section.id != id))
 		)
 	}
 	
+	const getBriefString = (start , end , string)=> {
+		const newString = string.substring(start , end) 
+		if(string.length > 14)  
+			return `${newString}...`
+		else 
+			return newString
+	} 
 	return(
 		<>
 			<Dialog
@@ -116,18 +118,11 @@ const AddSections = ({viewSectionForm,toggleViewSectionForm,sections,setSections
 					      :sections.map((section) => (
 					       	          
 					              <ListItem key={section.id}
-						 //              secondaryAction={
-						 //              <CloseSharpIcon
-						 //                edge="end"
-       // 
-						 //              />
-						 //            }
 						            
 					              >
 					                
-					              {/* <ListItemButton> */}
 						              
-						              <ListItemText sx={{width:"80%"}} primary={section.name} />
+						              <ListItemText sx={{width:"80%",color:"#666"}} primary={getBriefString(0,14,section.name)} />
 						              <ListItemButton onClick={()=>removeSectionFromList(section.id)}>
 							              <CloseSharpIcon fontSize="small"/>
 						            </ListItemButton>
@@ -149,15 +144,6 @@ const AddSections = ({viewSectionForm,toggleViewSectionForm,sections,setSections
 								Done
 							</Button>
 						
-							{/* <Button */}
-						 {/*      type="submit" */}
-						 {/*       */}
-						 {/*      // fullWidth */}
-						 {/*      variant="contained" */}
-						 {/*      sx={{mr:"20px", pt:"2px" , pb:"2px"}} */}
-						 {/*    > */}
-						 {/*      Done */}
-						 {/*    </Button> */}
 						</Box>
 					</Grid>
 				</Grid>
